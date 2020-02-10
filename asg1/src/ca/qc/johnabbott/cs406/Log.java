@@ -53,6 +53,6 @@ public class Log implements Comparable<Log> {
     @Override
     public int compareTo(Log rhs) {
         // TODO
-        return -1;
+        return 0;
     }
 }
