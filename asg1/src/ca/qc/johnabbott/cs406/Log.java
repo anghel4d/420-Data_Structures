@@ -30,7 +30,6 @@ public class Log implements Comparable<Log> {
     }
 
     // Getters and setters
-    // TODO
     private void setIpAddress(String ipString){
         this.ipAddress = new IPAddress(ipString);
     }
@@ -50,9 +49,25 @@ public class Log implements Comparable<Log> {
         this.length = Integer.parseUnsignedInt(length);
     }
 
+
+    /**
+     * Concise implementation courtesy of an very high-IQ student.
+     * @author NLV
+     */
     @Override
     public int compareTo(Log rhs) {
-        // TODO
-        return 0;
+        int compareResult;
+
+        if ((compareResult = this.ipAddress.compareTo(rhs.ipAddress)) != 0) return compareResult;
+        if ((compareResult = this.serviceName.compareTo(rhs.serviceName)) != 0) return  compareResult;
+
+        return this.timestamp.compareTo(rhs.timestamp);
     }
+
+    @Override
+    public String toString(){
+        return this.ipAddress.toString() + "\t" + serviceName + "\t" + timestamp.toString();
+    }
+
+
 }
