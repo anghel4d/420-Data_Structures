@@ -50,23 +50,21 @@ public class Log implements Comparable<Log> {
     }
 
 
-    /**
-     * Concise implementation courtesy of an very high-IQ student.
-     * @author NLV
-     */
     @Override
     public int compareTo(Log rhs) {
         int compareResult;
 
-        if ((compareResult = this.ipAddress.compareTo(rhs.ipAddress)) != 0) return compareResult;
-        if ((compareResult = this.serviceName.compareTo(rhs.serviceName)) != 0) return  compareResult;
+        if ((compareResult = this.ipAddress.compareTo(rhs.ipAddress)) != 0)
+            return compareResult;
+        if ((compareResult = this.serviceName.compareTo(rhs.serviceName)) != 0)
+            return  compareResult;
 
         return this.timestamp.compareTo(rhs.timestamp);
     }
 
     @Override
     public String toString(){
-        return this.ipAddress.toString() + "\t" + serviceName + "\t" + timestamp.toString();
+        return this.ipAddress.toString() + "\t" + serviceName + "\t" + timestamp.toString() + "\t" + length;
     }
 
 
