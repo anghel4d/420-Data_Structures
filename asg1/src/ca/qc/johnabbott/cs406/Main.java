@@ -8,110 +8,120 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        // (Testing)
-        System.out.println("Creating test log...");
-        try {
-            Log testlog1 = new Log("10.32.43.55	http	2018-01-22 11:03:16.989	8773");
-            Log testlog2 = new Log("10.32.43.54	ssh	2018-01-22 11:03:16.989	8773");
-            System.out.println(testlog1.compareTo(testlog2));
-        } catch (ParseException e) {
-            e.getMessage();
-            e.printStackTrace();
-        }
-        catch (RuntimeException e) {
-            System.out.println(e.getMessage());
-        }
-        System.out.println("Done.");
+        final String input1 = "data/test-full/in1.txt";
+        final String input2 = "data/test-full/in2.txt";
+        final String output = "data/test-full/out.txt";
+
+        merge(input1, input2, output);
     }
 
-    // TODO: 1 - Figure out defaults for log1 and log2
-    //       2 - Find a way to remove currentFile = x duplication
-    public static void merge(String in1, String in2, String out) {
-        // Keep track of the file currently being scanned or written to.
+    /**
+     * Merge two input files containing Log objects into a sorted output file.
+     * I was going use functions with pointers to avoid code duplication but I couldn't due to Java's limit on passing by reference.
+     * OOP or clever restructuring would do the trick but at this stage I am not down for that.
+     * So sorry about code duplication :[
+     * @param in1
+     * @param in2
+     * @param out
+     */
+    public static void merge(String in1, String in2, String out){
+        // Keep track of line numbers and active file
         String currentFile = in1;
+        int scanner1Line = 0;
+        int scanner2Line = 0;
+        int writerLine = 0;
 
-        try (Scanner s1 = new Scanner(new File(in1));
-             Scanner s2 = new Scanner(new File(in2));
-             PrintWriter pw = new PrintWriter(out)) {
+        // Declare IO objects here so that they will be dumped when they
+        // fall out of scope of the try-catch block.
+        try(Scanner scanner1 = new Scanner(new File(in1));
+            Scanner scanner2 = new Scanner(new File(in2));
+            PrintWriter printWriter = new PrintWriter(new File(out));){
 
-            // Wrap the scanners into isolated containers.
-            WrappedScanner ws1 = new WrappedScanner(s1);
-            WrappedScanner ws2 = new WrappedScanner(s2);
+            // Creating empty Log objects to populate output with when lines are scanned.
+            Log log1 = new Log();
+            Log log2 = new Log();
 
-            // Create logs for comparison and printing
-            currentFile = in1;
-            Log log1 = new Log(ws1.getNextLine());
-            currentFile = in2;
-            Log log2 = new Log(ws2.getNextLine());
+            // Set default log values on first lines of each input stream.
+            if(scanner1.hasNextLine())
+                log1 = new Log(scanner1.nextLine());
+            if (scanner2.hasNextLine())
+                log2 = new Log(scanner2.nextLine());
 
-            // Loop continuously over lines of the input files, printing to output as we go.
-            while (ws1.hasNextLine() || ws2.hasNextLine()) {
-                if (!ws1.hasNextLine()) {
+            // Loop over all input lines for as long as there is at least one line left in either input stream.
+            while (scanner1.hasNextLine() || scanner2.hasNextLine()) {
+                // If one of the input streams is exhausted, dump the remainder of the other one.
+                if (!scanner1.hasNextLine()) {
                     currentFile = out;
-                    pw.println(ws2.getNextLine());
-                } else if (!ws2.hasNextLine()) {
+                    writerLine++;
+                    scanner2Line++;
+                    printWriter.println(new Log(scanner2.nextLine()));
+                } else if (!scanner2.hasNextLine()) {
                     currentFile = out;
-                    pw.println(ws1.getNextLine());
-                } else {
+                    writerLine++;
+                    scanner1Line++;
+                    printWriter.println(new Log(scanner1.nextLine()));
+                }
+                // If both input streams have lines remaining, perform comparison operations and merging.
+                else {
+                    // Print both at once if lines are equivalent.
                     if(log1.compareTo(log2) == 0) {
                         currentFile = out;
-                        pw.println(log1);
-                        pw.println(log2);
+                        writerLine += 2;
+                        printWriter.println(log1);
+                        printWriter.println(log2);
 
                         currentFile = in1;
-                        log1 = new Log(ws1.getNextLine());
+                        scanner1Line++;
+                        log1 = new Log(scanner1.nextLine());
+
                         currentFile = in2;
-                        log2 = new Log(ws2.getNextLine());
+                        scanner2Line++;
+                        log2 = new Log(scanner2.nextLine());
                     }
+                    // Print and read next line if file1 line is greater than file2 line, reverse if opposite situation.
                     else if(log1.compareTo(log2) < 0) {
                         currentFile = out;
-                        pw.println(log1);
+                        writerLine++;
+                        printWriter.println(log1);
+
                         currentFile = in1;
-                        log1 = new Log(ws1.getNextLine());
+                        scanner1Line++;
+                        log1 = new Log(scanner1.nextLine());
                     } else {
                         currentFile = out;
-                        pw.println(log2);
+                        writerLine++;
+                        printWriter.println(log2);
+
                         currentFile = in2;
-                        log2 = new Log(ws2.getNextLine());
+                        scanner2Line++;
+                        log2 = new Log(scanner2.nextLine());
+                    }
+
+                    if(!scanner1.hasNextLine() || !scanner2.hasNextLine()){
+                        currentFile = out;
+                        writerLine += 2;
+                        printWriter.println(log1);
+                        printWriter.println(log2);
                     }
                 }
             }
-        } catch (Exception e) {
-            int errorLine = 0; //TODO Give this a proper value
-            String errorMessage = e.getMessage() + "\n" + "IO/Error on file [" + currentFile + "] on line [" + errorLine + "].";
-            System.out.println(errorMessage);
         }
+        catch (Exception e){
+            int errLine = 0;
+            if( currentFile == in1){
+                errLine = scanner1Line;
+            }
+            else if (currentFile == in2){
+                errLine = scanner2Line;
+            }
+            else{
+                errLine = writerLine;
+            }
+
+            System.err.println(e.getMessage());
+            System.err.println("Error on line [" + errLine + "] of file [" + currentFile + "]");
+        }
+
     }
 }
-
-// A simple wrapper for Java's Scanner, adding a counter "count" for the number of parsed lines.
-class WrappedScanner {
-    // Fields
-    private Scanner scanner;
-    private int count;
-
-    // Constructor
-    public WrappedScanner(Scanner scanner) {
-        this.scanner = scanner;
-        this.count = 0;
-    }
-
-    // Getters
-    public String getNextLine() {
-        this.count++;
-        return this.scanner.nextLine();
-    }
-
-    public int getCount() {
-        return this.count;
-    }
-
-    // Methods
-    public boolean hasNextLine() {
-        return this.scanner.hasNextLine();
-    }
-}
-
-
-
 

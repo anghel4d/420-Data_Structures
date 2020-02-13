@@ -19,8 +19,12 @@ public class Log implements Comparable<Log> {
     private Date timestamp;
     private int length;
 
-    // Constructors
-    // TODO
+    // Base Constructor
+    public Log(){
+
+    }
+
+    // Full Constructor
     public Log(String line) throws ParseException {
         String[] elements = line.split("\\s+");
         this.setIpAddress(elements[0]);
@@ -50,23 +54,21 @@ public class Log implements Comparable<Log> {
     }
 
 
-    /**
-     * Concise implementation courtesy of an very high-IQ student.
-     * @author NLV
-     */
     @Override
     public int compareTo(Log rhs) {
         int compareResult;
 
-        if ((compareResult = this.ipAddress.compareTo(rhs.ipAddress)) != 0) return compareResult;
-        if ((compareResult = this.serviceName.compareTo(rhs.serviceName)) != 0) return  compareResult;
+        if ((compareResult = this.ipAddress.compareTo(rhs.ipAddress)) != 0)
+            return compareResult;
+        if ((compareResult = this.serviceName.compareTo(rhs.serviceName)) != 0)
+            return  compareResult;
 
         return this.timestamp.compareTo(rhs.timestamp);
     }
 
     @Override
     public String toString(){
-        return this.ipAddress.toString() + "\t" + serviceName + "\t" + timestamp.toString();
+        return String.format("%-15s %-4s %-23s %-4s", ipAddress, serviceName, timestamp, length);
     }
 
 
