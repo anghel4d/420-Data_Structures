@@ -9,8 +9,9 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     private static final int DEFAULT_CAPACITY = 100;
 
-    private T[] elements;
-    private int size;
+    private T[] elements;   // Collection of elements contained in the set.
+    private int size;       // Current number of elements in the set.
+    private int index;      // Index of the element currently being pointed to by the traversal.
 
     public SortedSet() {
         this(DEFAULT_CAPACITY);
@@ -23,18 +24,40 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     }
 
     @Override
+    /**
+     * @param elem
+     * Looks for elem parameter in elements between index 0 and current size.
+     * Returns true if elem matches an element in the set, otherwise returns false.
+     */
     public boolean contains(T elem) {
         // elements is sorted, so we can binary search for the element.
         return Arrays.binarySearch(elements, 0, size, elem) >= 0;
     }
 
     @Override
+    /**
+     * @param rhs
+     * Determine if rhs is a subset of the current set,
+     * ie: this.elements contains at least all of the items in rhs.elements.
+     */
     public boolean containsAll(Set<T> rhs) {
-        throw new RuntimeException("Not implemented.");
+        for (T element : elements) {
+            if(Arrays.binarySearch(elements, 0, size, element) < 0){
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
+    /**
+     * @param elem
+     * Insert elem into the set and sort
+     */
     public boolean add(T elem) {
+        if(size >= elements.length){
+            throw new FullSetException();
+        }
         throw new RuntimeException("Not implemented.");
     }
 
