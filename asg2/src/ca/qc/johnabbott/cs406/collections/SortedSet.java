@@ -41,8 +41,8 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      * ie: this.elements contains at least all of the items in rhs.elements.
      */
     public boolean containsAll(Set<T> rhs) {
-        for (T element : elements) {
-            if(Arrays.binarySearch(elements, 0, size, element) < 0){
+        for (int i = 0; i < size; i++) {
+            if(Arrays.binarySearch(elements, 0, size, elements[i]) < 0){
                 return false;
             }
         }
@@ -55,7 +55,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      * Insert elem into the set while keeping it sorted.
      */
     public boolean add(T elem) {
-        if(size >= elements.length){
+        if(this.isFull()){
             throw new FullSetException();
         }
 
@@ -81,7 +81,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     @Override
     public boolean remove(T elem) {
-        if(size <= 0){
+        if(this.isEmpty()){
         	throw new EmptySetException();
         }
 
@@ -126,7 +126,8 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     	T min = elements[0];
 
-        for (T element : this.elements) {
+        for (int i = 0; i < size; i++) {
+        	T element = elements[i];
             if(element.compareTo(min) < 0){
                 min = element;
             }
@@ -146,7 +147,8 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     	T max = elements[0];
 
-        for (T element : this.elements) {
+        for (int i = 0; i < size; i++) {
+        	element = elements[i];
             if(element.compareTo(max) > 0){
                 max = element;
             }
@@ -191,7 +193,19 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     @Override
     public String toString() {
-        throw new RuntimeException("Not implemented.");
+        if(this.isEmpty()){
+        	throw new EmptySetException();
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        for(int i = 0; i < size; i++){
+        	sb.append(elements[i].toString());
+        	if(i < size - 1)
+        		sb.append(", ");
+        }
+        sb.append("}");
+
     }
 
     @Override
