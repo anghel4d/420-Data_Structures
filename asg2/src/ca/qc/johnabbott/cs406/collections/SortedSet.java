@@ -23,23 +23,23 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     }
 
-    @Override
     /**
      * @param elem
      * Looks for elem parameter in elements between index 0 and current size.
      * Returns true if elem matches an element in the set, otherwise returns false.
      */
+    @Override
     public boolean contains(T elem) {
         // elements is sorted, so we can binary search for the element.
         return Arrays.binarySearch(elements, 0, size, elem) >= 0;
     }
 
-    @Override
     /**
      * @param rhs
      * Determine if rhs is a subset of the current set,
      * ie: this.elements contains at least all of the items in rhs.elements.
      */
+    @Override
     public boolean containsAll(Set<T> rhs) {
         for (int i = 0; i < size; i++) {
             if(Arrays.binarySearch(elements, 0, size, elements[i]) < 0){
@@ -49,11 +49,11 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
         return true;
     }
 
-    @Override
     /**
      * @param elem
      * Insert elem into the set while keeping it sorted.
      */
+    @Override
     public boolean add(T elem) {
         if(this.isFull()){
             throw new FullSetException();
@@ -66,7 +66,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
         // Shift all elements greater than elem to the right.
         int i;
-        for (i = size; (i >= 0 && (elements[i].compareTo(elem) > 0)); i--){
+        for (i = size - 1; (i >= 0 && (elements[i].compareTo(elem) > 0)); i--){
         	elements[i + 1] = elements[i];
         }
 
@@ -86,7 +86,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
         }
 
         // Get the index of the element to remove.
-        rmIndex = Arrays.binarySearch(elements, 0, size, element);
+        int rmIndex = Arrays.binarySearch(elements, 0, size, elem);
         
         // If it doesn't exist, exit function and return false.
         if(rmIndex < 0){
@@ -121,7 +121,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      */
     public T min() {
     	if(this.isEmpty()){
-    		throw EmptySetException;
+    		throw new EmptySetException();
     	}
 
     	T min = elements[0];
@@ -142,13 +142,13 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      */
     public T max() {
         if(this.isEmpty()){
-    		throw EmptySetException;
+    		throw new EmptySetException();
     	}
 
     	T max = elements[0];
 
         for (int i = 0; i < size; i++) {
-        	element = elements[i];
+        	T element = elements[i];
             if(element.compareTo(max) > 0){
                 max = element;
             }
@@ -165,15 +165,9 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      */
     public SortedSet<T> subset(T first, T last) {
     	int firstIndex = Arrays.binarySearch(elements, 0, size, first);
-    	if(firstIndex < 0){
-    		throw new RunTimeException("First element is not in the array.");
-    	}
-    	int lastIndex = Arrays.binarySearch(elements, 0, size, last) - 1;
-    	if(lastIndex < 0){
-    		throw new RunTimeException("Last element is not in the array.");
-    	}
-    	if(firstIndex.compareTo(lastIndex) < 0){
-    		throw new RunTimeException("First element must be smaller than the last element of the subset.");
+        int lastIndex = Arrays.binarySearch(elements, 0, size, last) - 1;
+    	if(firstIndex < 0 || lastIndex < 0 || firstIndex > lastIndex){
+    		throw new IllegalArgumentException();
     	}
 
     	int subsetSize = (lastIndex - firstIndex) == 0 ? 1 : lastIndex - firstIndex;
@@ -194,7 +188,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     @Override
     public String toString() {
         if(this.isEmpty()){
-        	throw new EmptySetException();
+        	throw new TraversalException();
         }
 
         StringBuilder sb = new StringBuilder();
@@ -205,7 +199,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
         		sb.append(", ");
         }
         sb.append("}");
-
+        return sb.toString();
     }
 
     @Override
@@ -216,7 +210,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     @Override
     public T next() {
     	if(!hasNext()){
-    		throw new FullSetException();
+    		throw new TraversalException();
     	}
         return elements[++index];
     }
