@@ -12,6 +12,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     private T[] elements;   // Collection of elements contained in the set.
     private int size;       // Current number of elements in the set.
     private int index;      // Index of the element currently being pointed to by the traversal.
+    private boolean isSet;
 
     public SortedSet() {
         this(DEFAULT_CAPACITY);
@@ -20,7 +21,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     public SortedSet(int capacity) {
         this.size = 0;
         this.elements = (T[]) new Comparable[capacity];
-
+        this.isSet = false;
     }
 
     /**
@@ -55,13 +56,17 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      */
     @Override
     public boolean add(T elem) {
-        if(this.isFull()){
-            throw new FullSetException();
-        }
+        // Adding an element during traversal is really bad.
+        isSet = false;
 
         // Don't add element to set if it's already there.
         if (this.contains(elem)){
         	return false;
+        }
+
+        // Don't allow user to bloat internal array beyond capacity.
+        if(this.isFull()){
+            throw new FullSetException();
         }
 
         // Shift all elements greater than elem to the right.
@@ -81,8 +86,12 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     @Override
     public boolean remove(T elem) {
+        // Removing during traversal is also really bad.
+        isSet = false;
+
         if(this.isEmpty()){
-        	throw new EmptySetException();
+        	//throw new EmptySetException();
+            return false;
         }
 
         // Get the index of the element to remove.
@@ -165,7 +174,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      */
     public SortedSet<T> subset(T first, T last) {
     	int firstIndex = Arrays.binarySearch(elements, 0, size, first);
-        int lastIndex = Arrays.binarySearch(elements, 0, size, last) - 1;
+        int lastIndex = Arrays.binarySearch(elements, 0, size, last);
     	if(firstIndex < 0 || lastIndex < 0 || firstIndex > lastIndex){
     		throw new IllegalArgumentException();
     	}
@@ -187,10 +196,6 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     @Override
     public String toString() {
-        if(this.isEmpty()){
-        	throw new TraversalException();
-        }
-
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         for(int i = 0; i < size; i++){
@@ -205,14 +210,15 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     @Override
     public void reset() {
     	index = 0;
+    	isSet = true;
     }
 
     @Override
     public T next() {
-    	if(!hasNext()){
+    	if(!hasNext() || !isSet){
     		throw new TraversalException();
     	}
-        return elements[++index];
+        return elements[index++];
     }
 
     @Override

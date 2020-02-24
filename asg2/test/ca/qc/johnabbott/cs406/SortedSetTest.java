@@ -419,13 +419,13 @@ public class SortedSetTest {
     @Test
     public void testSubsetHighValueExclusive() {
         // test subset for the two innermost elements
-        int low = expectedData[TEST_SET_SIZE / 2 - 1] - 1;
+        int low = expectedData[TEST_SET_SIZE / 2 - 1];
         int high = expectedData[TEST_SET_SIZE / 2 + 1];
 
         // test subset with exclusive
-        SortedSet<Integer> subset = sampleSet.subset(expectedData[TEST_SET_SIZE / 2 - 1], expectedData[TEST_SET_SIZE / 2 + 1]);
+        SortedSet<Integer> subset = sampleSet.subset(low, high);
         assertEquals(2, subset.size());
-        assertTrue(subset.contains(expectedData[TEST_SET_SIZE / 2 - 1]));
+        assertTrue(subset.contains(low));
         assertTrue(subset.contains(expectedData[TEST_SET_SIZE / 2]));
     }
 
