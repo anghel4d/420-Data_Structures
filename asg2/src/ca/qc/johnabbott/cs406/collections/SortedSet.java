@@ -3,7 +3,7 @@ package ca.qc.johnabbott.cs406.collections;
 import java.util.Arrays;
 
 /**
- * TODO
+ * TODO: Add more comments with javadoc at the start of each method.
  */
 public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
@@ -52,28 +52,67 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     @Override
     /**
      * @param elem
-     * Insert elem into the set and sort
+     * Insert elem into the set while keeping it sorted.
      */
     public boolean add(T elem) {
         if(size >= elements.length){
             throw new FullSetException();
         }
-        throw new RuntimeException("Not implemented.");
+
+        // Don't add element to set if it's already there.
+        if (this.contains(elem)){
+        	return false;
+        }
+
+        // Shift all elements greater than elem to the right.
+        int i;
+        for (i = size; (i >= 0 && (elements[i].compareTo(elem) > 0)); i--){
+        	elements[i + 1] = elements[i];
+        }
+
+        // Set new size of the set.
+        this.size = this.size + 1;
+
+        // Insert elem.
+        elements[i + 1] = elem;
+
+        return true;
     }
 
     @Override
     public boolean remove(T elem) {
-        throw new RuntimeException("Not implemented.");
+        if(size <= 0){
+        	throw new EmptySetException();
+        }
+
+        // Get the index of the element to remove.
+        rmIndex = Arrays.binarySearch(elements, 0, size, element);
+        
+        // If it doesn't exist, exit function and return false.
+        if(rmIndex < 0){
+        	return false;
+        }
+
+        // If it exists, shift elements back to the left.
+        for(int i = rmIndex; i < elements.length - 1; i++){
+        	elements[i] = elements[i + 1];
+        }
+
+        // Set new size of the set.
+        this.size = this.size - 1;
+
+        // Confirm that an element was removed from the set.
+        return true;
     }
 
     @Override
     public int size() {
-        throw new RuntimeException("Not implemented.");
+        return this.size;
     }
 
     @Override
     public boolean isEmpty() {
-        throw new RuntimeException("Not implemented.");
+        return size <= 0;
     }
 
     /**
@@ -81,7 +120,19 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      * @return
      */
     public T min() {
-        throw new RuntimeException("Not implemented.");
+    	if(this.isEmpty()){
+    		throw EmptySetException;
+    	}
+
+    	T min = elements[0];
+
+        for (T element : this.elements) {
+            if(element.compareTo(min) < 0){
+                min = element;
+            }
+        }
+
+        return min;
     }
 
     /**
@@ -89,7 +140,19 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      * @return
      */
     public T max() {
-        throw new RuntimeException("Not implemented.");
+        if(this.isEmpty()){
+    		throw EmptySetException;
+    	}
+
+    	T max = elements[0];
+
+        for (T element : this.elements) {
+            if(element.compareTo(max) > 0){
+                max = element;
+            }
+        }
+
+        return max;
     }
 
     /**
@@ -99,13 +162,31 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      * @return
      */
     public SortedSet<T> subset(T first, T last) {
-        throw new RuntimeException("Not implemented.");
+    	int firstIndex = Arrays.binarySearch(elements, 0, size, first);
+    	if(firstIndex < 0){
+    		throw new RunTimeException("First element is not in the array.");
+    	}
+    	int lastIndex = Arrays.binarySearch(elements, 0, size, last) - 1;
+    	if(lastIndex < 0){
+    		throw new RunTimeException("Last element is not in the array.");
+    	}
+    	if(firstIndex.compareTo(lastIndex) < 0){
+    		throw new RunTimeException("First element must be smaller than the last element of the subset.");
+    	}
+
+    	int subsetSize = (lastIndex - firstIndex) == 0 ? 1 : lastIndex - firstIndex;
+    	SortedSet<T> subSet = new SortedSet(subsetSize);
+    	for(int i = firstIndex; i < lastIndex; i++){
+    		subSet.add(this.elements[i]);
+    	}
+
+        return subSet;
     }
 
 
     @Override
     public boolean isFull() {
-        throw new RuntimeException("Not implemented.");
+    	return size >= elements.length;
     }
 
     @Override
@@ -115,16 +196,19 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
     @Override
     public void reset() {
-        throw new RuntimeException("Not implemented.");
+    	index = 0;
     }
 
     @Override
     public T next() {
-        throw new RuntimeException("Not implemented.");
+    	if(!hasNext()){
+    		throw new FullSetException();
+    	}
+        return elements[++index];
     }
 
     @Override
     public boolean hasNext() {
-        throw new RuntimeException("Not implemented.");
+        return index < size;
     }
 }
