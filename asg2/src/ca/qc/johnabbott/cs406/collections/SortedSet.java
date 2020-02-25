@@ -3,7 +3,8 @@ package ca.qc.johnabbott.cs406.collections;
 import java.util.Arrays;
 
 /**
- * TODO: Add more comments with javadoc at the start of each method.
+ * Sorted Set is a collection of unique sorted elements.
+ * @param <T>
  */
 public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
@@ -130,8 +131,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     }
 
     /**
-     * TODO
-     * @return
+     * @return The lowest value in elements.
      */
     public T min() {
     	if(this.isEmpty()){
@@ -151,8 +151,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     }
 
     /**
-     * TODO
-     * @return
+     * @return The highest value in elements.
      */
     public T max() {
         if(this.isEmpty()){
@@ -172,46 +171,29 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
     }
 
     /**
-     * TODO
      * @param first
      * @param last
-     * @return
+     * @return The subset of elements between first inclusive and last exclusive.
      */
     public SortedSet<T> subset(T first, T last) {
         if(first.compareTo(last) > 0){
             throw new IllegalArgumentException();
         }
 
+        // Create the subset to be returned.
         SortedSet<T> subSet = new SortedSet();
         for(int i = 0; i < size; i++){
             T elem = elements[i];
             if(elem.compareTo(last) >= 0){
-                break;
+                break;  // Stop adding elements if last has been reached.
             }
             if(elem.compareTo(first) >= 0){
-                subSet.add(elem);
+                subSet.add(elem);   // Add any element to the subset, starting from first.
             }
         }
 
         return subSet;
     }
-    /*
-    public SortedSet<T> subset(T first, T last) {
-    	int firstIndex = Arrays.binarySearch(elements, 0, size, first);
-        int lastIndex = Arrays.binarySearch(elements, 0, size, last);
-    	if(firstIndex < 0 || lastIndex < 0 || firstIndex > lastIndex){
-    		throw new IllegalArgumentException();
-    	}
-
-    	int subsetSize = (lastIndex - firstIndex) == 0 ? 1 : lastIndex - firstIndex;
-    	SortedSet<T> subSet = new SortedSet(subsetSize);
-    	for(int i = firstIndex; i < lastIndex; i++){
-    		subSet.add(this.elements[i]);
-    	}
-
-        return subSet;
-    }
-    */
 
     @Override
     public boolean isFull() {
