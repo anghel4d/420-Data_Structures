@@ -42,8 +42,9 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      */
     @Override
     public boolean containsAll(Set<T> rhs) {
-        for (int i = 0; i < size; i++) {
-            if(Arrays.binarySearch(elements, 0, size, elements[i]) < 0){
+        SortedSet<T> workingSet = (SortedSet)rhs;   // Set<T> itself doesn't have any elements to check for, so it must be interpreted as SortedSet<T>.
+        for (int i = 0; i < workingSet.size; i++) {
+            if (Arrays.binarySearch(this.elements, 0, size, workingSet.elements[i]) < 0){
                 return false;
             }
         }
@@ -72,7 +73,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
         // Shift all elements greater than elem to the right.
         int i;
         for (i = size - 1; (i >= 0 && (elements[i].compareTo(elem) > 0)); i--){
-        	elements[i + 1] = elements[i];
+            elements[i + 1] = elements[i];
         }
 
         // Set new size of the set.
@@ -84,6 +85,10 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
         return true;
     }
 
+    /**
+     * @param elem
+     * Remove an element from the set while keeping it sorted.
+     */
     @Override
     public boolean remove(T elem) {
         // Removing during traversal is also really bad.
@@ -173,6 +178,25 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
      * @return
      */
     public SortedSet<T> subset(T first, T last) {
+        if(first.compareTo(last) > 0){
+            throw new IllegalArgumentException();
+        }
+
+        SortedSet<T> subSet = new SortedSet();
+        for(int i = 0; i < size; i++){
+            T elem = elements[i];
+            if(elem.compareTo(last) >= 0){
+                break;
+            }
+            if(elem.compareTo(first) > 0){
+                subSet.add(elem);
+            }
+        }
+
+        return subSet;
+    }
+    /*
+    public SortedSet<T> subset(T first, T last) {
     	int firstIndex = Arrays.binarySearch(elements, 0, size, first);
         int lastIndex = Arrays.binarySearch(elements, 0, size, last);
     	if(firstIndex < 0 || lastIndex < 0 || firstIndex > lastIndex){
@@ -187,7 +211,7 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
 
         return subSet;
     }
-
+    */
 
     @Override
     public boolean isFull() {
