@@ -185,10 +185,10 @@ public class SortedSet<T extends Comparable<T>> implements Set<T> {
         SortedSet<T> subSet = new SortedSet();
         for(int i = 0; i < size; i++){
             T elem = elements[i];
-            if(elem.compareTo(last) > 0){
+            if(elem.compareTo(last) >= 0){
                 break;
             }
-            if(elem.compareTo(first) > 0){
+            if(elem.compareTo(first) >= 0){
                 subSet.add(elem);
             }
         }
