@@ -115,7 +115,6 @@ public class Main {
             // animate is setup
             if(config.animate())
                 GraphicalTerrain.run(terrain, search, WINDOW_WIDTH, WINDOW_HEIGHT, false);
-
     }
 
     /**
