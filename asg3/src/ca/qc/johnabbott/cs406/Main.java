@@ -31,7 +31,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, UnknownAlgorithm {
 
-        // create the menu from the files in the resourses folder.
+        // create the menu from the files in the resources folder.
         Menu<File> menu = new Menu<>();
         File[] fileList = new File(RESOURCES_LOCATION).listFiles();
         Arrays.sort(fileList, new Comparator<File>() {
@@ -60,7 +60,7 @@ public class Main {
             System.out.println("Choose a configuration:");
             System.out.flush();
 
-            // load configuration, reporting errors as the happen
+            // load configuration, reporting errors as they happen
             Config config = null;
             try {
                 config = new Config(choice);
@@ -99,7 +99,7 @@ public class Main {
         Random random = new Random();
 
         Search search = config.getSearch();
-  // load terrain
+            // load terrain
             Terrain terrain = generator.generate(random);
             System.out.println(terrain);
 
@@ -144,6 +144,4 @@ public class Main {
             GraphicalTerrain.run(terrain, search, WINDOW_WIDTH, WINDOW_HEIGHT, false);
 
     }
-
-
 }

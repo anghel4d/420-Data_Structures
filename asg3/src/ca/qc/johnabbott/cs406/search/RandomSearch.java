@@ -23,7 +23,6 @@ public class RandomSearch implements Search {
 
     // for tracking the "traversable" solution.
     private Location solution;
-    private boolean foundSolution;
 
     // the terrain we're searching in.
     private Terrain terrain;
@@ -84,7 +83,6 @@ public class RandomSearch implements Search {
                 // if no direction was found, we are stuck and leave without solution
                 // see below on how foundSolution would normally be used.
                 if(direction == Direction.NONE) {
-                    foundSolution = false;
                     return;
                 }
 
@@ -103,10 +101,6 @@ public class RandomSearch implements Search {
 
             System.out.println(memory);
         }
-
-        // we reached the goal and have a solution.
-        // see below on how foundSolution would normally be used.
-        foundSolution = true;
     }
 
     @Override

@@ -23,10 +23,15 @@ public class Config {
      * @throws UnknownAlgorithm
      */
     public static Search getAlgorithmByName(String algorithmName) throws UnknownAlgorithm {
-        // TODO: add DFS and BFS
         switch (algorithmName.toUpperCase()) {
             case "RANDOM":
                 return new RandomSearch();
+            case "DFS":
+                return new DepthFirstSearch();
+            case "BFS":
+                return new BreadthFirstSearch();
+            case "A*":
+                return new AStarSearch();
             default:
                 throw new UnknownAlgorithm("Unknown search algorithm: " + algorithmName +
                         ". You will need add a case to \"getAlgorithmByName(..)\". Follow this stacktrace to see where to add it!");
