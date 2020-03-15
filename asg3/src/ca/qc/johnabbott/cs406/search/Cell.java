@@ -15,8 +15,8 @@ import ca.qc.johnabbott.cs406.terrain.Token;
 class Cell implements Copyable<Cell>, AsChar {
 
     private Color color;
-    private Direction to;
-    private Direction from;
+    private Direction toDir;
+    private Direction fromDir;
 
     /**
      * Create a white cell.
@@ -31,8 +31,8 @@ class Cell implements Copyable<Cell>, AsChar {
      */
     public Cell(Color color) {
         this.setColor(color);
-        setTo(Direction.NONE);
-        setFrom(Direction.NONE);
+        setToDir(Direction.NONE);
+        setFromDir(Direction.NONE);
     }
 
     @Override
@@ -53,7 +53,7 @@ class Cell implements Copyable<Cell>, AsChar {
     public Cell copy() {
         Cell clone = new Cell();
         clone.setColor(this.getColor());
-        clone.setTo(this.getTo());
+        clone.setToDir(this.getToDir());
         return clone;
     }
 
@@ -65,19 +65,19 @@ class Cell implements Copyable<Cell>, AsChar {
         this.color = color;
     }
 
-    public Direction getTo() {
-        return to;
+    public Direction getToDir() {
+        return toDir;
     }
 
-    public void setTo(Direction to) {
-        this.to = to;
+    public void setToDir(Direction toDir) {
+        this.toDir = toDir;
     }
 
-    public Direction getFrom() {
-        return from;
+    public Direction getFromDir() {
+        return fromDir;
     }
 
-    public void setFrom(Direction from) {
-        this.from = from;
+    public void setFromDir(Direction fromDir) {
+        this.fromDir = fromDir;
     }
 }

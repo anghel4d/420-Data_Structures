@@ -91,7 +91,7 @@ public class RandomSearch implements Search {
                 direction = previous;
 
             // record the step we've taken to memory to recreate the solution in the later traversal.
-            memory.get(current).setTo(direction);
+            memory.get(current).setToDir(direction);
 
             // step
             current = current.get(direction);
@@ -112,7 +112,7 @@ public class RandomSearch implements Search {
     @Override
     public Direction next() {
         // recall the direction at this location, move to the corresponding location and return it.
-        Direction direction = memory.get(solution).getTo();
+        Direction direction = memory.get(solution).getToDir();
         solution = solution.get(direction);
         return direction;
     }

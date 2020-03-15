@@ -13,7 +13,7 @@ public class Stack<T> {
 
     // Constants
 
-    private static final int DEFAULT_CAPACITY = 100;
+    private static final int DEFAULT_CAPACITY = 10000;
 
     // Fields
 
