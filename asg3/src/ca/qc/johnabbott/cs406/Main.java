@@ -78,6 +78,10 @@ public class Main {
                 runFromFile(config);
 
 
+            // Wait for user input.
+            System.out.println("Hit return to continue...");
+            System.in.read();
+
             // print footer
             System.out.println("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=");
             System.out.println();

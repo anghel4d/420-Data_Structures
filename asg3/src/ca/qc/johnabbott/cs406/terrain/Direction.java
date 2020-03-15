@@ -50,11 +50,27 @@ public enum Direction {
     }
 
     /**
+     * Get next direction clockwise from input parameter.
+     * @return
+     */
+    public static Direction getClockwise(Direction direction) {
+        return clockwise[(direction.ordinal() + 1) % clockwise.length];
+    }
+
+    /**
      * Get directions counterclockwise from LEFT.
      * @return
      */
     public static Direction[] getCounterClockwise() {
         return counterClockwise;
+    }
+
+    /**
+     * Get next direction counterclockwise from input parameter.
+     * @return
+     */
+    public static Direction getCounterClockwise(Direction direction) {
+        return counterClockwise[(direction.ordinal() + 1) % counterClockwise.length];
     }
 
     /**
