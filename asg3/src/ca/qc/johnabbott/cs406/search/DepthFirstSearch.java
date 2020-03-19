@@ -87,6 +87,7 @@ public class DepthFirstSearch implements Search {
             }
             else {
                 nextDirection = previous;
+                steps.push(nextDirection);
             }
 
             // record the step we've taken to memory to recreate the solution in the later traversal.
