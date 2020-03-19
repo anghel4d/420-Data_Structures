@@ -43,71 +43,41 @@ public class DepthFirstSearch implements Search {
         memory = new SparseArray<>(defaultCell);
         steps = new Stack<>();
 
-        boolean backtracked = false;
-
-        // setup random direction generator.
-        Random random = new Random();
-        Generator<Direction> generator = Direction.generator();
-
         // track the current search location, starting at the terrain start location.
         Location currentLocation = terrain.getStart();
 
-        // Start by trying to move UP.
-        Direction previousDirection = Direction.UP;
-
+        // Keep trying until the goal is reached or the cursor is stuck.
         while(!currentLocation.equals(terrain.getGoal())) {
 
             // find the next direction
             Direction nextDirection = Direction.NONE;
-            Location nextLocation = currentLocation.get(previousDirection);
+            Location nextLocation;
 
-            // change direction if we can't go in the previous direction
-            if((!terrain.inTerrain(nextLocation) || terrain.isWall(nextLocation)) || memory.get(nextLocation).getColor() != Color.WHITE) {
+            // Check all directions starting from UP and moving clockwise.
+            for(int i = 0; i < 4; i++){
 
-                // check in all directions starting from UP and moving clockwise.
-                for(int i = 0; i < 4; i++){
+                // Get next clockwise direction.
+                Direction tmp = Direction.getClockwise()[i];
 
-                    // Get next clockwise direction.
-                    Direction tmp = Direction.getClockwise()[i];
-
-                    // see if stepping in that direction is possible and do it!
-                    nextLocation = currentLocation.get(tmp);
-                    if (terrain.inTerrain(nextLocation) && !terrain.isWall(nextLocation) && memory.get(nextLocation).getColor() == Color.WHITE) {
-                        previousDirection = nextDirection = tmp;
-                        break;
-                    }
+                // see if stepping in that direction is possible and do it!
+                nextLocation = currentLocation.get(tmp);
+                if (terrain.inTerrain(nextLocation) && !terrain.isWall(nextLocation) && memory.get(nextLocation).getColor() == Color.WHITE) {
+                    nextDirection = tmp;
+                    steps.push(nextDirection);
+                    break;
                 }
+            }
 
-                // if no direction was found, we are stuck and leave without solution
-                if(nextDirection == Direction.NONE) {
+            // if no direction was found, we are stuck and leave without solution
+            if(nextDirection == Direction.NONE) {
+                // Try to backtrack if possible
+                if(!steps.isEmpty()) {
+                    nextDirection = steps.pop();
+                }
+                else {
                     return;
-                    /*
-                    if(steps.isEmpty()){
-                        return;
-                    }
-                    else{
-                        // Get the opposite of the last direction from stack.
-                        Direction last = steps.pop().opposite();
-
-                        // Signal the Backtrack.
-                        memory.get(currentLocation).setToDir(last);
-                        currentLocation = currentLocation.get(last);
-
-                        // Temporarily set previous cell to white.
-                        memory.get(currentLocation).setColor(Color.WHITE);
-
-                        backtracked = true;
-                    }
-                    */
                 }
-
             }
-            else{
-                nextDirection = previousDirection;
-            }
-
-            // Save the direction in stack in case of backtracking
-            //steps.push(nextDirection);
 
             // record the step we've taken to memory to recreate the solution in the later traversal.
             memory.get(currentLocation).setToDir(nextDirection);
