@@ -64,6 +64,20 @@ public class Stack<T> {
     }
 
     /**
+     * Take a peek at the top of the stack without removing the element.
+     * @return the item at the top of the stack.
+     * @precondition The stack is not empty.
+     * @postcondition Stack remains unchanged.
+     */
+    public T peek(){
+        if(isEmpty()) // check precondition
+            throw new StackUnderflowException();
+
+        T element = elements[tos];
+        return element;
+    }
+
+    /**
      * Get the item from the top of the stack.
      * @return the item at the top of the stack.
      * @precondition The stack is not empty.

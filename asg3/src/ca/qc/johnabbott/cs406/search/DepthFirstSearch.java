@@ -56,7 +56,8 @@ public class DepthFirstSearch implements Search {
             // Check all directions starting from UP and moving clockwise.
             for(int i = 0; i < 4; i++){
 
-                // Get next clockwise direction.
+                // Get next clockwise direction, or the last valid direction if there was one.
+                //Direction tmp = (steps.isEmpty()) ? Direction.getClockwise()[i] : steps.peek();
                 Direction tmp = Direction.getClockwise()[i];
 
                 // see if stepping in that direction is possible and do it!
@@ -72,7 +73,7 @@ public class DepthFirstSearch implements Search {
             if(nextDirection == Direction.NONE) {
                 // Try to backtrack if possible
                 if(!steps.isEmpty()) {
-                    nextDirection = steps.pop();
+                    nextDirection = steps.pop().opposite();
                 }
                 else {
                     return;
