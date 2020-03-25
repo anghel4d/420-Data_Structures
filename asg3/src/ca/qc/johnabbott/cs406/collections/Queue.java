@@ -15,6 +15,7 @@ public class Queue<T> implements Traversable<T> {
     private static final int DEFAULT_CAPACITY = 100;
 
     // Fields
+    private int count;  // The number of elements in the queue.
 
     // store the queue in a "circular" array between front and rear
     private T[] elements;
@@ -68,6 +69,9 @@ public class Queue<T> implements Traversable<T> {
         rear = mod(rear + 1, elements.length);
         elements[rear] = item;
 
+        // the number of elements has increased by one
+        count++;
+
         // enqueue means the queue is not empty
         empty = false;
 
@@ -89,6 +93,9 @@ public class Queue<T> implements Traversable<T> {
         front = mod(front + 1, elements.length);
         T element = elements[front];
         elements[front] = null;
+
+        // The number of elements has decreased by one.
+        count--;
 
         // dequeue can make the queue empty
         if(front == rear)
@@ -173,6 +180,10 @@ public class Queue<T> implements Traversable<T> {
     @Override
     public boolean hasNext() {
         return current != rear && !isEmpty();
+    }
+
+    public int getCount(){
+        return this.count;
     }
 
     /**
