@@ -5,17 +5,19 @@
 package ca.qc.johnabbott.cs406.search;
 
 import ca.qc.johnabbott.cs406.collections.SparseArray;
-import ca.qc.johnabbott.cs406.collections.Stack;
+import ca.qc.johnabbott.cs406.collections.Queue;
 import ca.qc.johnabbott.cs406.terrain.Direction;
 import ca.qc.johnabbott.cs406.terrain.Location;
 import ca.qc.johnabbott.cs406.terrain.Terrain;
 
+
 public class BreadthFirstSearch implements Search {
+    /** Fields **/
     // records where we've been and what steps we've taken.
     private SparseArray<Cell> memory;
 
-    // record the steps we've taken
-    public Stack<Direction> steps;
+    // a queue of grey cells to be visited
+    public Queue<Location> greys;
 
     // for tracking the "traversable" solution.
     private Location solution;
@@ -23,12 +25,12 @@ public class BreadthFirstSearch implements Search {
     // the terrain we're searching in.
     private Terrain terrain;
 
-    /**
-     * Create a new Random search.
-     */
+    /** Constructor **/
     public BreadthFirstSearch() {
+        greys = new Queue<>();
     }
 
+    /** Methods **/
     @Override
     public void solve(Terrain terrain) {
 
@@ -36,66 +38,51 @@ public class BreadthFirstSearch implements Search {
 
         // track locations we've been to using our terrain "memory"
         Cell defaultCell = new Cell();
+        defaultCell.setColor(Color.WHITE);
         memory = new SparseArray<>(defaultCell);
-        steps = new Stack<>();
 
-        // track the current search location, starting at the terrain start location.
+        // starting at the terrain start location.
         Location currentLocation = terrain.getStart();
+        greys.enqueue(currentLocation);
 
-        // Start off the previous direction as up.
-        Direction previous = Direction.UP;
-
-        // Keep trying until the goal is reached or the cursor is stuck.
-        while(!currentLocation.equals(terrain.getGoal())) {
-
-            // find the next direction
-            Direction nextDirection = Direction.NONE;
-            Location nextLocation = currentLocation.get(previous);
-
-            // Keep going in one direction until there is nowhere else to go, then change direction.
-            if((!terrain.inTerrain(nextLocation) || terrain.isWall(nextLocation)) || memory.get(nextLocation).getColor() != Color.WHITE) {
-                // Check all directions starting from UP and moving clockwise.
-                for(int i = 0; i < 4; i++){
-
-                    // Get next clockwise direction, or the last valid direction if there was one.
-                    //Direction tmp = steps.isEmpty() ? Direction.getClockwise()[i] : steps.peek();
-                    Direction tmp = Direction.getClockwise()[i];
-
-                    // see if stepping in that direction is possible and do it!
-                    nextLocation = currentLocation.get(tmp);
-                    if (terrain.inTerrain(nextLocation) && !terrain.isWall(nextLocation) && memory.get(nextLocation).getColor() == Color.WHITE) {
-                        previous = nextDirection = tmp;
-                        steps.push(nextDirection);
-                        break;
-                    }
-                }
-
-                // if no direction was found, we are stuck and leave without solution
-                if(nextDirection == Direction.NONE) {
-                    // Try to backtrack if possible
-                    if(!steps.isEmpty()) {
-                        nextDirection = steps.pop().opposite();
-                    }
-                    else {
-                        return;
-                    }
-                }
-            }
-            else {
-                nextDirection = previous;
-                steps.push(nextDirection);
-            }
-
-            // record the step we've taken to memory to recreate the solution in the later traversal.
-            memory.get(currentLocation).setToDir(nextDirection);
-
-            // step
-            currentLocation = currentLocation.get(nextDirection);
-
-            // record that we've been here
+        while(!greys.isEmpty()) {
+            // 1. Color the current cell BLACK
+            currentLocation = greys.dequeue();
             memory.get(currentLocation).setColor(Color.BLACK);
 
+            // Check all directions starting from UP and moving clockwise.
+            for(int i = 0; i < Direction.getClockwise().length; i++){
+                Direction nextDirection = Direction.getClockwise()[i];
+
+                // see if stepping in that direction is possible and visit it.
+                Location nextLocation = currentLocation.get(nextDirection);
+                if (terrain.inTerrain(nextLocation) && !terrain.isWall(nextLocation)) {
+                    if(memory.get(nextLocation).getColor() == Color.WHITE){
+                        // 4. Move in this direction, color it grey, and immediately backtrack to current cell.
+
+                        memory.get(nextLocation).setColor(Color.GREY);
+                        memory.get(currentLocation).setToDir(nextDirection);
+                        memory.get(nextLocation).setFromDir(nextDirection.opposite());
+                        greys.enqueue(nextLocation);
+                    }
+                }
+            }
+
             System.out.println(memory);
+
+            if(currentLocation.equals(terrain.getGoal())){
+                TracePath();
+                return;
+            }
+        }
+    }
+
+    private void TracePath(){
+        Location current = terrain.getGoal();
+        while(!current.equals(terrain.getStart())){
+            Direction dir = memory.get(current).getFromDir();
+            current = current.get(dir);
+            memory.get(current).setToDir(dir.opposite());
         }
     }
 

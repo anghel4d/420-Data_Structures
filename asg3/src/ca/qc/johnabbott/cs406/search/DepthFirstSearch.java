@@ -12,7 +12,6 @@ import ca.qc.johnabbott.cs406.terrain.Terrain;
 import ca.qc.johnabbott.cs406.collections.Stack;
 
 import java.util.Random;
-
 public class DepthFirstSearch implements Search {
 
     // records where we've been and what steps we've taken.
@@ -59,7 +58,7 @@ public class DepthFirstSearch implements Search {
             // Keep going in one direction until there is nowhere else to go, then change direction.
             if((!terrain.inTerrain(nextLocation) || terrain.isWall(nextLocation)) || memory.get(nextLocation).getColor() != Color.WHITE) {
                 // Check all directions starting from UP and moving clockwise.
-                for(int i = 0; i < 4; i++){
+                for(int i = 0; i < Direction.getClockwise().length; i++){
 
                     // Get next clockwise direction, or the last valid direction if there was one.
                     //Direction tmp = steps.isEmpty() ? Direction.getClockwise()[i] : steps.peek();
