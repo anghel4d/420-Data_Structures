@@ -61,7 +61,6 @@ public class BreadthFirstSearch implements Search {
                         // 4. Move in this direction, color it grey, and immediately backtrack to current cell.
 
                         memory.get(nextLocation).setColor(Color.GREY);
-                        memory.get(currentLocation).setToDir(nextDirection);
                         memory.get(nextLocation).setFromDir(nextDirection.opposite());
                         greys.enqueue(nextLocation);
                     }
