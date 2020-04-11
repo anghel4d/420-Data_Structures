@@ -1,10 +1,19 @@
 package com.company;
 
+import java.util.Scanner;
+
 public class Main {
 
     public static void main(String[] args) {
 
-        CircleLink(5, 0, 4);
+        Scanner s = new Scanner(System.in);
+        System.out.print("\nn value: ");
+        int n = s.nextInt();
+        System.out.print("\nm value: ");
+        int m = s.nextInt();
+        System.out.print("\no value: ");
+        int o = s.nextInt();
+        CircleLink(n, m, o);
         System.out.println("\nDone.");
     }
 
@@ -39,6 +48,7 @@ public class Main {
             // Move cursor off of the element that was just removed.
             current = current.next;
         }
+
         // Remove the last and final element of the linked list.
         RemoveFromCircleLink(current);
     }
