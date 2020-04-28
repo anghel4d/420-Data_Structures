@@ -7,6 +7,7 @@ import ca.qc.johnabbott.cs406.generator.Generator;
 import ca.qc.johnabbott.cs406.generator.SentenceGenerator;
 import ca.qc.johnabbott.cs406.generator.WordGenerator;
 import ca.qc.johnabbott.cs406.profiler.Profiler;
+import ca.qc.johnabbott.cs406.profiler.Report;
 
 import java.util.Random;
 
@@ -94,6 +95,8 @@ public class ProfileLists {
         Profiler.getInstance().startSection("ArrayList - Max using traversal");
         listMaxUsingTraversal(alist);
         Profiler.getInstance().endSection();
+
+        Report.printAllSections(Profiler.getInstance().produceSections());
     }
 
     private static void listInitializeWithAppend(List<String> list) {
@@ -147,6 +150,7 @@ public class ProfileLists {
     private static String listMaxUsingTraversal(List<String> list) {
         if(list.size() == 0)
             throw new RuntimeException("List can't be empty");
+        Profiler.getInstance().startRegion("traversal");
         list.reset();
         String max = list.next();
         while(list.hasNext()) {
@@ -154,6 +158,7 @@ public class ProfileLists {
             if(current.compareTo(max) > 0)
                 max = current;
         }
+        Profiler.getInstance().endRegion();
         return max;
     }
 

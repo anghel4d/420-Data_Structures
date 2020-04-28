@@ -45,6 +45,13 @@ public class ProfileSamples {
         List<Section> list = new ArrayList<>();
         list.add(section);
 
+        Section section2 = new Section("Sample Section 0: Manual creation of regions and sections to verify the reporting only.");
+        section2.addRegion("Sample Region 1", region1);
+        section2.addRegion("Sample Region 2", region2);
+        section2.addRegion("Sample Region 3", region3);
+        section2.addRegion("TOTAL", total);
+        list.add(section2);
+
         Report.printAllSections(list);
 
         // ================================================================================
@@ -61,8 +68,7 @@ public class ProfileSamples {
 
         Profiler.getInstance().endSection();
 
-        // TODO: remove when done with this example
-        if(DEBUG) printProfiler();
+        //if(DEBUG) printProfiler();
 
         java.util.List<Section> sectionList = Profiler.getInstance().produceSections();
         Report.printAllSections(sectionList);
@@ -79,8 +85,7 @@ public class ProfileSamples {
 
         Profiler.getInstance().endSection();
 
-        // TODO: remove when done with this example
-        if(DEBUG) printProfiler();
+        //if(DEBUG) printProfiler();
 
         sectionList = Profiler.getInstance().produceSections();
         Report.printAllSections(sectionList);
@@ -106,8 +111,7 @@ public class ProfileSamples {
 
         Profiler.getInstance().endSection();
 
-        // TODO: remove when done with this example
-        if(DEBUG) printProfiler();
+        //if(DEBUG) printProfiler();
 
         sectionList = Profiler.getInstance().produceSections();
         Report.printAllSections(sectionList);
@@ -187,6 +191,7 @@ public class ProfileSamples {
     //https://www.geeksforgeeks.org/insertion-sort/
     private static <T extends Comparable<T>> void insertionSort(T[] arr) {
 
+        int compares = 0;
         int n = arr.length;
         for (int i = 1; i < n; ++i) {
             T key = arr[i];
@@ -195,6 +200,7 @@ public class ProfileSamples {
             Profiler.getInstance().startRegion("Shift.");
             while (j >= 0) {
                 Profiler.getInstance().startRegion("compare(x,y).");
+                compares++;
                 int x = arr[j].compareTo(key);
                 Profiler.getInstance().endRegion();
 
@@ -207,6 +213,7 @@ public class ProfileSamples {
             arr[j + 1] = key;
             Profiler.getInstance().endRegion();
         }
+        System.out.println("Comparisons made: " + compares);
     }
 
 }

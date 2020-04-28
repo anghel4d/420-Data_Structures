@@ -115,8 +115,73 @@ public class Profiler {
      * @return A list of sections.
      */
     public List<Section> produceSections() {
+
+        // Store all sections in an ArrayList to be interpreted by the Report.printAllSections() method.
         List<Section> sections = new ArrayList<>();
-        // TODO: compile results
+        // Current working Section
+        Section currentSection = null;
+        // Keep track of the start time for a section so we can calculate total elapsed and % at the end of it.
+        long startTime = 0;
+        // The regions that have been fully added to the section.
+        Map<String, Region> currentRegions = null;
+        // The regions that have been created and are waiting to be added to the section.
+        Stack<Mark> pendingRegionTags = new Stack<>();
+
+        for(Mark currentMark : marks){
+            switch(currentMark.type){
+                case START_SECTION: {
+                    startTime = currentMark.time;
+                    currentSection = new Section(currentMark.label);
+                    currentRegions = currentSection.getRegions();
+                    break;
+                }
+                case END_SECTION: {
+                    // Indicate that the section was successfully run,
+                    currentRegions.get("TOTAL").addRun();
+
+                    // Calculate the final time spent in the section.
+                    long endTime = currentMark.time;
+                    long totalElapsed = endTime - startTime;
+                    // Update the section's TOTAL region so that it displays properly at the end.
+                    currentRegions.get("TOTAL").addElapsedTime(totalElapsed);
+
+                    // Calculate percentages for each Region of the Segment for nice display and comparisons.
+                    for(Map.Entry<String, Region> regionEntry : currentRegions.entrySet()){
+                        Region tmp = regionEntry.getValue();
+                        long regionTime = tmp.getElapsedTime();
+                        tmp.setPercentOfSection((double)regionTime / totalElapsed);
+                    }
+
+                    // Add the section to the list
+                    sections.add(currentSection);
+                    break;
+                }
+                case START_REGION: {
+                    // Creates a marker for a region to be added as soon as its END_REGION is found.
+                    pendingRegionTags.push(currentMark);
+                    break;
+                }
+                case END_REGION: {
+                    // In the case of a section being returned to after its first END_REGION marker,
+                    // that region must have its information (time and run) updated.
+                    // Care is taken to ensure that a new region is not erroneously added in this case.
+                    Mark popped = pendingRegionTags.pop();
+                    if(currentRegions.containsKey(popped.label)) {
+                        Region temp = currentRegions.get(popped.label);
+                        temp.addRun();
+                        temp.addElapsedTime((currentMark.time - popped.time));
+                    }
+                    else {
+                        Region temp = new Region(currentSection, 1, (currentMark.time - popped.time), 0);
+                        currentSection.addRegion(popped.label, temp);
+                    }
+                    //currentRegions = currentSection.getRegions();
+                    break;
+                }
+            }
+        }
+
+        marks.clear();
         return sections;
     }
 

@@ -6,6 +6,7 @@ package ca.qc.johnabbott.cs406.collections.map;
 
 import ca.qc.johnabbott.cs406.collections.list.ArrayList;
 import ca.qc.johnabbott.cs406.collections.list.List;
+import ca.qc.johnabbott.cs406.profiler.Profiler;
 
 /**
  * A naive implementation of the map interface using a simple link chain.
@@ -42,10 +43,13 @@ public class NaiveMap<K,V> implements Map<K,V> {
     @Override
     public void put(K key, V value) {
 
+        Profiler.getInstance().startRegion("put(k,v)");
+
         // try replacing an existing value
         for(Link<Entry<K,V>> current = head; current != null; current = current.next)
             if(current.element.getKey().equals(key)) {
                 current.element.setValue(value);
+                Profiler.getInstance().endRegion();
                 return;
             }
 
@@ -54,6 +58,8 @@ public class NaiveMap<K,V> implements Map<K,V> {
         tmp.next = head;
         head = tmp;
         size++;
+
+        Profiler.getInstance().endRegion();
     }
 
     @Override
