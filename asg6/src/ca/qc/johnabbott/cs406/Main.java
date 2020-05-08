@@ -4,21 +4,23 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) throws CloneNotSupportedException {
-	// write your code here
+        // a few test scenarios
         ThreeMensMorris board = new ThreeMensMorris();
         board.play(1, 1);
         board.play(2, 2);
         board.play(1, 3);
         board.play(3, 1);
         board.play(3, 2);
-        ThreeMensMorris board2 = board.copy();
+        ThreeMensMorris board2 = board.copy();  // Should be identical to board.
         board.play(1, 2);
         ThreeMensMorris board3 = new ThreeMensMorris("  ●○     ".toCharArray());
+
+        // Checking outputs.
         System.out.println(board.toString());
         System.out.println(board2.toString());
         System.out.println(board3.toString());
 
-
+        // Recursion test.
         List<ThreeMensMorris> testResult = generate(board3);
         System.out.println(testResult.toString());
     }
