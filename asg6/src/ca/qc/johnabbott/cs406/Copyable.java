@@ -16,3 +16,9 @@ public interface Copyable<T extends Copyable<T>> {
      */
     T copy();
 }
+
+/*
+public interface Copyable<T> {
+    T copy();
+}
+*/
