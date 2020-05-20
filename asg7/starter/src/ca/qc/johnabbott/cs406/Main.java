@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Scanner lexiconFile = null;
+        Scanner lexiconFile;
         try {
             lexiconFile = new Scanner(new FileReader(Alphabets.LEXICON_ALPHABET));
         } catch (FileNotFoundException e) {
