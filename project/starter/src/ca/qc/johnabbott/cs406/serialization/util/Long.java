@@ -113,7 +113,7 @@ public class Long implements Serializable, Comparable<Long> {
 
         // read the long value from the ByteBuffer,
         // since the backing byte[] now has the data.
-        value = buffer.getInt();
+        value = buffer.getLong();
 
     }
 
