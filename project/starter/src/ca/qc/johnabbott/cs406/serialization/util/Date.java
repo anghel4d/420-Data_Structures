@@ -13,7 +13,7 @@ import java.io.IOException;
 public class Date  implements Serializable {
     @Override
     public byte getSerialId() {
-        return 0;
+        return 0x08;
     }
 
     @Override

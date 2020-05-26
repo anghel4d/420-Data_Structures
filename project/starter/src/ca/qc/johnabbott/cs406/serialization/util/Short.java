@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class Short implements Serializable, Comparable<Short> {
 
-    public static final byte SERIAL_ID = 0x02;
+    public static final byte SERIAL_ID = 0x03;
 
     // optimization, use a static ByteBuffer to avoid extra allocations on each (de)serialize operation.
     private static final ByteBuffer buffer;
