@@ -49,7 +49,6 @@ public interface Either<S, T> {
 
     /**
      * Class to store left Either values.
-     * TODO: should be private but Java won't let me. Update to anonymous inner class next semester ;)
      * @param <S>
      * @param <T>
      */
@@ -82,7 +81,6 @@ public interface Either<S, T> {
 
     /**
      * Class to store right Either values.
-     * TODO: should be private but Java won't let me. Update to anonymous inner class next semester ;)
      * @param <S>
      * @param <T>
      */

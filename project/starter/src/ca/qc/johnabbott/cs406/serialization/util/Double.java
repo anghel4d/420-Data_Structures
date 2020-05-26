@@ -17,7 +17,6 @@ import java.util.Objects;
  */
 public class Double implements Serializable, Comparable<Double> {
 
-    // TODO
     public static final byte SERIAL_ID = 0x04;
 
     // optimization, use a static ByteBuffer to avoid extra allocations on each (de)serialize operation.

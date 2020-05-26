@@ -16,7 +16,6 @@ import java.util.Objects;
  */
 public class Float implements Serializable, Comparable<Float> {
 
-    // TODO
     public static final byte SERIAL_ID = 0x05;
 
     // optimization, use a static ByteBuffer to avoid extra allocations on each (de)serialize operation.

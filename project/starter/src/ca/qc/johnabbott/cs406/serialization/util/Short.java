@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-// TODO
 public class Short implements Serializable, Comparable<Short> {
 
     public static final byte SERIAL_ID = 0x02;

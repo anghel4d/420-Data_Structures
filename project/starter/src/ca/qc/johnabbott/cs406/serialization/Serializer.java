@@ -170,7 +170,6 @@ public class Serializer {
         return s;
     }
 
-    // TODO hide?
     /**
      * Read a length `n` from the source (as an int),
      * and use this length as the number of bytes to read and return
@@ -205,7 +204,6 @@ public class Serializer {
         return read(bytes, bytes.length);
     }
 
-    // TODO
     /**
      * Read a byte array from the source with a specified length.
      * @param bytes The byte array to store the read bytes.
