@@ -4,14 +4,22 @@
 
 package ca.qc.johnabbott.cs406;
 
+import ca.qc.johnabbott.cs406.serialization.Serializable;
+import ca.qc.johnabbott.cs406.serialization.SerializationException;
+import ca.qc.johnabbott.cs406.serialization.Serializer;
+
+import java.io.IOException;
+
 /**
  * A simple IP address class
  * - uses a byte[] to store octets
  * @author Ian Clement
  */
-public class IPAddress implements Comparable<IPAddress> {
+public class IPAddress implements Comparable<IPAddress>, Serializable {
 
+    public static final byte SERIAL_ID = 0x22;
     private byte[] octet;
+
 
     /**
      * Create a blank IP address.
@@ -101,5 +109,27 @@ public class IPAddress implements Comparable<IPAddress> {
                 return r;
         }
         return 0;
+    }
+
+    @Override
+    public byte getSerialId() {
+        return SERIAL_ID;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) throws IOException {
+        serializer.write(octet[0]);
+        serializer.write(octet[1]);
+        serializer.write(octet[2]);
+        serializer.write(octet[3]);
+    }
+
+    @Override
+    public void deserialize(Serializer serializer) throws IOException, SerializationException {
+        octet = new byte[4];
+        octet[0] = serializer.read();
+        octet[1] = serializer.read();
+        octet[2] = serializer.read();
+        octet[3] = serializer.read();
     }
 }

@@ -118,6 +118,7 @@ public class Double implements Serializable, Comparable<Double> {
     public java.lang.String toString() {
         return java.lang.String.valueOf(value);
     }
+
     @Override
     public int compareTo(Double rhs) {
          double tmp = this.value - rhs.value;

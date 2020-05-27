@@ -42,6 +42,7 @@ public class Serializer {
     private Source source;
     private Destination destination;
 
+    // You could use these.
     private boolean optimizeReferences;
     private Map<Object, java.lang.Integer> refs;
     private Map<java.lang.Integer, Object> refsInv;
@@ -69,7 +70,7 @@ public class Serializer {
         if(optimizeReferences) {
             refs = new IdentityHashMap<>();
             refsInv = new HashMap<>();
-         }
+        }
     }
 
     /**
@@ -94,6 +95,7 @@ public class Serializer {
 
     /**
      * Write the serializable object to the destination. Includes a serialization header.
+     * * TODO: 1. FIX REFERENCES OPTIMIZATION
      * @param value The object to serialize.
      * @throws IOException
      */
@@ -159,9 +161,11 @@ public class Serializer {
     /**
      * Read a serializable object from the source.
      * @return The deserialized object.
+     * TODO: 1. FIX REFERENCES OPTIMIZATION
      * @throws IOException
      * @throws SerializationException
      */
+
     public Serializable readSerializable() throws IOException, SerializationException {
         byte serialId = source.read();
         Serializable s = getSerializableById(serialId);
@@ -173,6 +177,7 @@ public class Serializer {
     /**
      * Read a length `n` from the source (as an int),
      * and use this length as the number of bytes to read and return
+     * (I probably should't use this?)
      * @return the bytes read.
      * @throws IOException
      */

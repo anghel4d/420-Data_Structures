@@ -6,6 +6,7 @@ package ca.qc.johnabbott.cs406.collections.map;
 
 import ca.qc.johnabbott.cs406.collections.list.LinkedList;
 import ca.qc.johnabbott.cs406.collections.list.List;
+import ca.qc.johnabbott.cs406.serialization.Serializable;
 
 import java.util.Iterator;
 
@@ -14,7 +15,7 @@ import java.util.Iterator;
  *
  * @author Ian Clement (ian.clement@johnabbott.qc.ca)
  */
-public class HashMap<K,V> implements Map<K,V> {
+public class HashMap<K extends Serializable, V extends Serializable> implements Map<K,V> {
 
     private static final int DEFAULT_BUCKETS = 7;
     private static final double DEFAULT_REHASHING_THRESHOLD = 0.8;

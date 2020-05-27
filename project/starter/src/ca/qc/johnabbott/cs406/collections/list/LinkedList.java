@@ -5,16 +5,22 @@
 package ca.qc.johnabbott.cs406.collections.list;
 
 import java.util.Iterator;
+import ca.qc.johnabbott.cs406.serialization.Serializable;
+import ca.qc.johnabbott.cs406.serialization.SerializationException;
+import ca.qc.johnabbott.cs406.serialization.Serializer;
+import java.io.IOException;
 
 /**
  * An implementation of the List interface using unidirectional links, forming a "chain".
  *
  * @author Ian Clement
  */
-public class LinkedList<T> implements List<T> {
+public class LinkedList<T extends Serializable> implements List<T>, Serializable {
+
+    public static final byte SERIAL_ID = 0x26;
 
     /* private inner class for link "chains" */
-    private static class Link<T> {
+    private static class Link<T extends Serializable> {
         T element;
         Link<T> next;
         public Link(T element) {
@@ -53,6 +59,42 @@ public class LinkedList<T> implements List<T> {
         last = head = null;
         size = 0;
     }
+
+    @Override
+    public byte getSerialId() {
+        return SERIAL_ID;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) throws IOException {
+        serializer.write(size);
+
+        Link<T> current = this.head;
+        for(int i = 0; i < size && current != null; i++){
+            serializer.write(current.element);
+            if(current.next != null) {
+                current = current.next;
+            }
+        }
+    }
+
+    @Override
+    public void deserialize(Serializer serializer) throws IOException, SerializationException {
+        this.size = serializer.readInt();
+
+        for(int i = 0; i < size; i++){
+            T value = (T) serializer.readSerializable();
+
+            if(i == 0){
+                last = head = new Link<>(value);
+            }
+            else{
+                last.next = new Link<>(value);
+                last = last.next;
+            }
+        }
+    }
+
 
     @Override
     public void add(T element) {

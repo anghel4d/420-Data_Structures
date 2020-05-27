@@ -4,6 +4,12 @@
 
 package ca.qc.johnabbott.cs406.collections;
 
+
+import ca.qc.johnabbott.cs406.serialization.Serializable;
+import ca.qc.johnabbott.cs406.serialization.SerializationException;
+import ca.qc.johnabbott.cs406.serialization.Serializer;
+import java.io.IOException;
+
 /**
  * Represents an value that can be one of two generic data types: either a "left" value of type S, or a "right" value of type T.
  *
@@ -39,12 +45,12 @@ public interface Either<S, T> {
      * @param <T>
      * @return
      */
-    static <S,T > Either<S,T> left(S val) {
-        return new LeftEither<>(val);
+    static <S extends Serializable, T extends Serializable> Either<S, T> left(S val) {
+        return new LeftEither<S, T>(val);
     }
 
-    static <S ,T > Either<S,T> right(T val) {
-        return new RightEither<>(val);
+    static <S extends Serializable, T extends Serializable> Either<S, T> right(T val) {
+        return new RightEither<S, T>(val);
     }
 
     /**
@@ -52,7 +58,9 @@ public interface Either<S, T> {
      * @param <S>
      * @param <T>
      */
-    class LeftEither<S ,T > implements Either<S,T> {
+    class LeftEither<S extends Serializable, T extends Serializable> implements Either<S,T>, Serializable {
+
+        public static final byte SERIAL_ID = 0x24;
 
         private S val;
 
@@ -77,6 +85,20 @@ public interface Either<S, T> {
             throw new RuntimeException();
         }
 
+        @Override
+        public byte getSerialId() {
+            return SERIAL_ID;
+        }
+
+        @Override
+        public void serialize(Serializer serializer) throws IOException {
+            serializer.write(val);
+        }
+
+        @Override
+        public void deserialize(Serializer serializer) throws IOException, SerializationException {
+            val = (S) serializer.readSerializable();
+        }
     }
 
     /**
@@ -84,7 +106,9 @@ public interface Either<S, T> {
      * @param <S>
      * @param <T>
      */
-    class RightEither<S ,T > implements Either<S,T> {
+    class RightEither<S extends Serializable, T extends Serializable> implements Either<S,T>, Serializable {
+
+        public static final byte SERIAL_ID = 0x25;
 
         private T val;
 
@@ -92,8 +116,7 @@ public interface Either<S, T> {
             this.val = val;
         }
 
-        public RightEither() {
-        }
+        public RightEither() { }
 
         @Override
         public Type getType() {
@@ -108,6 +131,21 @@ public interface Either<S, T> {
         @Override
         public T getRight() {
             return val;
+        }
+
+        @Override
+        public byte getSerialId() {
+            return SERIAL_ID;
+        }
+
+        @Override
+        public void serialize(Serializer serializer) throws IOException {
+            serializer.write(val);
+        }
+
+        @Override
+        public void deserialize(Serializer serializer) throws IOException, SerializationException {
+            val = (T) serializer.readSerializable();
         }
     }
 }

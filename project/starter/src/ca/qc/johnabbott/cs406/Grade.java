@@ -1,5 +1,11 @@
 package ca.qc.johnabbott.cs406;
 
+import ca.qc.johnabbott.cs406.serialization.Serializable;
+import ca.qc.johnabbott.cs406.serialization.SerializationException;
+import ca.qc.johnabbott.cs406.serialization.Serializer;
+import ca.qc.johnabbott.cs406.serialization.util.String;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.Objects;
 
@@ -9,7 +15,9 @@ import java.util.Objects;
  * @author Ian Clement (ian.clement@johnabbott.qc.ca)
  * @since 2018-04-29
  */
-public class Grade {
+public class Grade implements Serializable {
+
+    public static final byte SERIAL_ID = 0x23;
 
     private java.lang.String name;
     private int result;
@@ -73,4 +81,25 @@ public class Grade {
     }
 
 
+    @Override
+    public byte getSerialId() {
+        return SERIAL_ID;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) throws IOException {
+        String tmpStr = new String(this.name);
+        serializer.write(tmpStr);
+        serializer.write(result);
+        ca.qc.johnabbott.cs406.serialization.util.Date tmpDate = new ca.qc.johnabbott.cs406.serialization.util.Date(this.date);
+        serializer.write(tmpDate);
+    }
+
+    @Override
+    public void deserialize(Serializer serializer) throws IOException, SerializationException {
+        this.name = ((String) serializer.readSerializable()).get();
+        this.result = serializer.readInt();
+        ca.qc.johnabbott.cs406.serialization.util.Date tmp = (ca.qc.johnabbott.cs406.serialization.util.Date) serializer.readSerializable();
+        this.date = new Date(tmp.get().getTime());
+    }
 }
