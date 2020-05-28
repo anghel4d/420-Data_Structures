@@ -44,8 +44,8 @@ public class Serializer {
 
     // You could use these.
     private boolean optimizeReferences;
-    private Map<Object, java.lang.Integer> refs;
-    private Map<java.lang.Integer, Object> refsInv;
+    private Map<Serializable, java.lang.Integer> refs;    // 0x00 // Serializable ... or object
+    private Map<java.lang.Integer, Serializable> refsInv; // 0xff
 
     /**
      * Create a Serializer.
@@ -68,7 +68,7 @@ public class Serializer {
         this.destination = destination;
         this.optimizeReferences = optimizeReferences;
         if(optimizeReferences) {
-            refs = new IdentityHashMap<>();
+            refs = new IdentityHashMap<>(); // Special hashmap using == instead of .equals for matching keys.
             refsInv = new HashMap<>();
         }
     }
@@ -95,13 +95,25 @@ public class Serializer {
 
     /**
      * Write the serializable object to the destination. Includes a serialization header.
-     * * TODO: 1. FIX REFERENCES OPTIMIZATION
      * @param value The object to serialize.
      * @throws IOException
      */
     public void write(Serializable value) throws IOException {
+        int pos = destination.getPosition();
         destination.write(value.getSerialId());
-        value.serialize(this);
+
+        if(optimizeReferences){
+            if(refs.containsKey(value)) {
+                write(ALIAS_MARKER);
+                write(refs.get(value));
+            } else {
+                write(ORIGINAL_MARKER);
+                refs.put(value, pos); // how do you get the address you're writing to? I'm using size for now.
+                value.serialize(this);
+            }
+        } else {
+            value.serialize(this);
+        }
     }
 
     /**
@@ -161,16 +173,27 @@ public class Serializer {
     /**
      * Read a serializable object from the source.
      * @return The deserialized object.
-     * TODO: 1. FIX REFERENCES OPTIMIZATION
      * @throws IOException
      * @throws SerializationException
      */
-
     public Serializable readSerializable() throws IOException, SerializationException {
+        int pos = source.getPosition();
         byte serialId = source.read();
         Serializable s = getSerializableById(serialId);
-        if(s != null)
+
+        if(optimizeReferences) {
+            byte marker = (byte) read();
+            if(marker == ORIGINAL_MARKER && s != null) {
+                s.deserialize(this);
+                refsInv.put(pos, s);
+            } else if (marker == ALIAS_MARKER) {
+                int location = readInt();
+                s = refsInv.get(location);
+            }
+        } else if (s != null) {
             s.deserialize(this);
+        }
+
         return s;
     }
 

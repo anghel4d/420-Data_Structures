@@ -27,7 +27,7 @@ public class MainDeserialize {
                 new BufferedChannel(
                         new RandomAccessFile("foo.bin", "rw").getChannel()
                         , BufferedChannel.Mode.READ
-                ), null);
+                ), null, true);
 
         // Out
         deserializeTreeSet(serializer);
@@ -41,7 +41,10 @@ public class MainDeserialize {
         serializer.register(Tuple.SERIAL_ID, Tuple::new);
 
         Tuple<Integer, String> tuple = (Tuple) serializer.readSerializable();
+        Tuple<Integer, String> tupleRef = (Tuple) serializer.readSerializable();
+        tuple.setFirst(new Integer(345));
         System.out.println(tuple);
+        System.out.println(tupleRef);
     }
 
     private static void deserializeDate(Serializer serializer) throws IOException, SerializationException {
@@ -105,6 +108,9 @@ public class MainDeserialize {
         serializer.register(TreeSet.SERIAL_ID, TreeSet::new);
 
         TreeSet<Integer> treeSet = (TreeSet<Integer>) serializer.readSerializable();
+        TreeSet<Integer> treeSetRef = (TreeSet<Integer>) serializer.readSerializable();
+        treeSet.add(new Integer(777));
         System.out.println(treeSet.toString());
+        System.out.println(treeSetRef.toString());
     }
 }

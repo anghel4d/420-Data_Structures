@@ -25,7 +25,7 @@ public class MainSerialize {
 
         BufferedChannel channel = new BufferedChannel(new RandomAccessFile("foo.bin", "rw").getChannel(), BufferedChannel.Mode.WRITE);
 
-        Serializer serializer = new Serializer(null, channel);
+        Serializer serializer = new Serializer(null, channel, true);
 
         // In
         serializeTreeSet(serializer);
@@ -35,8 +35,11 @@ public class MainSerialize {
 
     private static void serializeTuple(Serializer serializer) throws IOException, SerializationException {
         Tuple<Integer, String> tuple = new Tuple<>(new Integer(123), new String("ABC"));
+        Tuple<Integer, String> tupleRef = tuple;
         System.out.println(tuple);
+        System.out.println(tupleRef);
         serializer.write(tuple);
+        serializer.write(tupleRef);
     }
 
     private static void serializeDate(Serializer serializer) throws IOException, SerializationException {
@@ -107,7 +110,10 @@ public class MainSerialize {
         treeSet.add(new Integer(1));
         treeSet.add(new Integer(8));
         treeSet.add(new Integer(10));
+        TreeSet<Integer> treeSetRef = treeSet;
         System.out.println(treeSet.toString());
+        System.out.println(treeSetRef.toString());
         serializer.write(treeSet);
+        serializer.write(treeSetRef);
     }
 }
