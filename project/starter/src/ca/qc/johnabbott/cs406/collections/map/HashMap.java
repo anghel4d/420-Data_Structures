@@ -7,7 +7,10 @@ package ca.qc.johnabbott.cs406.collections.map;
 import ca.qc.johnabbott.cs406.collections.list.LinkedList;
 import ca.qc.johnabbott.cs406.collections.list.List;
 import ca.qc.johnabbott.cs406.serialization.Serializable;
+import ca.qc.johnabbott.cs406.serialization.SerializationException;
+import ca.qc.johnabbott.cs406.serialization.Serializer;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 /**
@@ -15,13 +18,60 @@ import java.util.Iterator;
  *
  * @author Ian Clement (ian.clement@johnabbott.qc.ca)
  */
-public class HashMap<K extends Serializable, V extends Serializable> implements Map<K,V> {
+public class HashMap<K extends Serializable, V extends Serializable> implements Map<K,V>, Serializable {
+
+    public static final byte SERIAL_ID = 0x27;
 
     private static final int DEFAULT_BUCKETS = 7;
     private static final double DEFAULT_REHASHING_THRESHOLD = 0.8;
 
     public double getThreshold() {
         return threshold;
+    }
+
+    @Override
+    public byte getSerialId() {
+        return SERIAL_ID;
+    }
+
+    @Override
+    public void serialize(Serializer serializer) throws IOException {
+        serializer.write(this.buckets.length);
+        serializer.write(this.threshold);
+        serializer.write(this.size);
+
+        for(int i = 0; i < this.buckets.length; i++){
+            if(buckets[i] == null){
+                continue;
+            }
+
+            Entry<K, V> e = buckets[i].element;
+            K currentKey = e.getKey();
+            V currentVal = e.getValue();
+
+            serializer.write(i);
+            serializer.write(currentKey);
+            serializer.write(currentVal);
+        }
+    }
+
+    @Override
+    public void deserialize(Serializer serializer) throws IOException, SerializationException {
+        int bucketsLength = serializer.readInt();
+        this.buckets = (Link<Entry<K,V>>[]) new Link[bucketsLength];
+
+        this.threshold = serializer.readDouble();
+
+        this.size = serializer.readInt();
+
+        for(int i = 0; i < size; i++){
+            int bucketIndex = serializer.readInt();
+            K currentKey = (K) serializer.readSerializable();
+            V currentValue = (V) serializer.readSerializable();
+            Entry<K, V> e = new Entry<K,V>(currentKey, currentValue);
+            Link<Entry<K,V>> l = new Link<>(e);
+            buckets[bucketIndex] = l;
+        }
     }
 
     private static class Link<T> {

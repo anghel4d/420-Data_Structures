@@ -2,6 +2,8 @@ package ca.qc.johnabbott.cs406;
 
 import ca.qc.johnabbott.cs406.collections.Either;
 import ca.qc.johnabbott.cs406.collections.list.LinkedList;
+import ca.qc.johnabbott.cs406.collections.map.HashMap;
+import ca.qc.johnabbott.cs406.collections.set.TreeSet;
 import ca.qc.johnabbott.cs406.serialization.Serializable;
 import ca.qc.johnabbott.cs406.serialization.SerializationException;
 import ca.qc.johnabbott.cs406.serialization.Serializer;
@@ -26,7 +28,7 @@ public class MainSerialize {
         Serializer serializer = new Serializer(null, channel);
 
         // In
-        serializeLinkedList(serializer);
+        serializeTreeSet(serializer);
 
         channel.close();
     }
@@ -75,5 +77,37 @@ public class MainSerialize {
         l.add(new Integer(3));
         System.out.println(l.toString());
         serializer.write(l);
+    }
+
+    private static void serializeHashMap(Serializer serializer) throws IOException, SerializationException {
+        HashMap<Integer, String> hashMap = new HashMap<>();
+        hashMap.put(new Integer(1), new String("A"));
+        hashMap.put(new Integer(2), new String("B"));
+        hashMap.put(new Integer(3), new String("C"));
+        hashMap.put(new Integer(4), new String("D"));
+        hashMap.put(new Integer(5), new String("E"));
+        hashMap.put(new Integer(6), new String("F"));
+        hashMap.put(new Integer(7), new String("G"));
+        hashMap.put(new Integer(8), new String("H"));
+        hashMap.put(new Integer(9), new String("I"));
+        hashMap.put(new Integer(10), new String("J"));
+        hashMap.put(new Integer(11), new String("K"));
+        serializer.write(hashMap);
+    }
+
+    private static void serializeTreeSet(Serializer serializer) throws IOException, SerializationException {
+        TreeSet<Integer> treeSet = new TreeSet<>();
+        treeSet.add(new Integer(5));
+        treeSet.add(new Integer(3));
+        treeSet.add(new Integer(7));
+        treeSet.add(new Integer(4));
+        treeSet.add(new Integer(6));
+        treeSet.add(new Integer(2));
+        treeSet.add(new Integer(9));
+        treeSet.add(new Integer(1));
+        treeSet.add(new Integer(8));
+        treeSet.add(new Integer(10));
+        System.out.println(treeSet.toString());
+        serializer.write(treeSet);
     }
 }

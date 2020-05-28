@@ -2,6 +2,8 @@ package ca.qc.johnabbott.cs406;
 
 import ca.qc.johnabbott.cs406.collections.Either;
 import ca.qc.johnabbott.cs406.collections.list.LinkedList;
+import ca.qc.johnabbott.cs406.collections.map.HashMap;
+import ca.qc.johnabbott.cs406.collections.set.TreeSet;
 import ca.qc.johnabbott.cs406.serialization.Serializable;
 import ca.qc.johnabbott.cs406.serialization.io.BufferedChannel;
 import ca.qc.johnabbott.cs406.serialization.SerializationException;
@@ -28,7 +30,7 @@ public class MainDeserialize {
                 ), null);
 
         // Out
-        deserializeLinkedList(serializer);
+        deserializeTreeSet(serializer);
 
         serializer.close();
     }
@@ -87,5 +89,22 @@ public class MainDeserialize {
 
         LinkedList<Integer> l = (LinkedList<Integer>) serializer.readSerializable();
         System.out.println(l.toString());
+    }
+
+    private static void deserializeHashMap(Serializer serializer) throws IOException, SerializationException {
+        serializer.register(HashMap.SERIAL_ID, HashMap::new);
+        serializer.register(Integer.SERIAL_ID, Integer::new);
+        serializer.register(String.SERIAL_ID, String::new);
+
+        HashMap<Integer, String> hashMap = (HashMap<Integer, String>) serializer.readSerializable();
+        System.out.println(hashMap.toString());
+    }
+
+    private static void deserializeTreeSet(Serializer serializer) throws IOException, SerializationException {
+        serializer.register(Integer.SERIAL_ID, Integer::new);
+        serializer.register(TreeSet.SERIAL_ID, TreeSet::new);
+
+        TreeSet<Integer> treeSet = (TreeSet<Integer>) serializer.readSerializable();
+        System.out.println(treeSet.toString());
     }
 }

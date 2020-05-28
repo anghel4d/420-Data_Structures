@@ -6,12 +6,108 @@ package ca.qc.johnabbott.cs406.collections.set;
 
 import java.util.Iterator;
 
+import ca.qc.johnabbott.cs406.serialization.Serializable;
+import ca.qc.johnabbott.cs406.serialization.SerializationException;
+import ca.qc.johnabbott.cs406.serialization.Serializer;
+import java.io.IOException;
+
 /**
  * An implementation of the Set API using a binary search tree.
  *
  * @author Ian Clement (ian.clement@johnabbott.qc.ca)
  */
-public class TreeSet<T extends Comparable<T> > implements Set<T> {
+public class TreeSet<T extends Comparable<T> & Serializable> implements Set<T>, Serializable {
+
+    public static final byte SERIAL_ID = 0x28;
+
+    @Override
+    public byte getSerialId() {
+        return SERIAL_ID;
+    }
+
+    /**
+     * The TreeSet is serialized by writing each node value,
+     * recursively moving down the left branches whenever possible
+     * and moving up the right when an entire left is exhausted and we move back up to the root.
+     * @param serializer serializer
+     * @throws IOException
+     */
+    @Override
+    public void serialize(Serializer serializer) throws IOException {
+        serializer.write(size);
+
+        if(root != null){
+            serialize(root, serializer);
+        }
+    }
+
+    // Byte representations of boolean flags since Serializer can't write booleans otherwise.
+    private static final byte B_TRUE = 0x01;
+    private static final byte B_FALSE = 0x00;
+    public void serialize(Node<T> current, Serializer serializer) throws IOException {
+        serializer.write(current.element);
+
+        // Marker for whether or not there are branches to current Node.
+        boolean hasLeft = current.left != null;
+        boolean hasRight = current.right != null;
+
+        // Why doesn't the serializer have a way to write Booleans?
+        if(hasLeft) {
+            serializer.write(B_TRUE);
+        } else {
+            serializer.write(B_FALSE);
+        }
+        if(hasRight) {
+            serializer.write(B_TRUE);
+        } else {
+            serializer.write(B_FALSE);
+        }
+
+        // There has to be a second check because the hasLeft and hasRight markers should follow immediately after a Node's value.
+        // This if statement controls the recursion.
+        if(hasLeft) {
+            serialize(current.left, serializer);
+        }
+        if (hasRight) {
+            serialize(current.right, serializer);
+        }
+    }
+
+    /**
+     * The TreeSet is deserialized by reading each node value from the binary and putting them into new Node<T>() objects.
+     * This is done by recursively following each possible left branch from the root, and moving on to each right on the way back up to root.
+     * @param serializer serializer
+     * @throws IOException
+     * @throws SerializationException
+     */
+    @Override
+    public void deserialize(Serializer serializer) throws IOException, SerializationException {
+        this.size = serializer.readInt();
+
+        if(size != 0){
+            root = deserialize(root, serializer);
+        }
+    }
+
+    public Node<T> deserialize(Node<T> current, Serializer serializer) throws IOException, SerializationException {
+        T value = (T) serializer.readSerializable();
+
+        current = new Node<>(value);
+
+        // Storing a byte as a flag and converting it to a boolean should be more efficient than trying to serialize Nodes themselves or trying to infer/compute their branch.
+        boolean hasLeft = serializer.read() == B_TRUE;
+        boolean hasRight = serializer.read() == B_TRUE;
+
+        // Controlled recursion, moving down left branches when possible, then taking any rights on the way back up.
+        if(hasLeft) {
+            current.left = deserialize(current.left, serializer);
+        }
+        if(hasRight) {
+            current.right =deserialize(current.right, serializer);
+        }
+
+        return current;
+    }
 
     private class Node<T> {
         public T element;
@@ -27,6 +123,11 @@ public class TreeSet<T extends Comparable<T> > implements Set<T> {
     private Node<T> root;
     private int size;
 
+    // Default constructor
+    public TreeSet() {
+        this.size = 0;
+        this.root = null;
+    }
 
     @Override
     public boolean add(T elem) {
@@ -128,7 +229,7 @@ public class TreeSet<T extends Comparable<T> > implements Set<T> {
         }
     }
 
-            @Override
+    @Override
     public boolean remove(T elem) {
         return removeHelper(root, null, elem);
     }
@@ -207,7 +308,20 @@ public class TreeSet<T extends Comparable<T> > implements Set<T> {
         }
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        toStringHelper(root, builder);
+        return builder.toString();
+    }
 
+    private void toStringHelper(Node<T> current, StringBuilder builder) {
+        if(current == null)
+            return;
+        toStringHelper(current.left, builder);
+        builder.append(current.element);
+        toStringHelper(current.right, builder);
+    }
 
     @Override
     public boolean isEmpty() {
@@ -233,6 +347,5 @@ public class TreeSet<T extends Comparable<T> > implements Set<T> {
     public Iterator<T> iterator() {
         throw new RuntimeException("Not implemented.");
     }
-
 
 }
