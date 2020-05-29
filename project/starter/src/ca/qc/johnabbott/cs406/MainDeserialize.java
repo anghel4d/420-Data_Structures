@@ -35,6 +35,7 @@ public class MainDeserialize {
         serializer.close();
     }
 
+    // Functions for testing all of the deserializations.
     private static void deserializeTuple(Serializer serializer) throws IOException, SerializationException {
         serializer.register(Integer.SERIAL_ID, Integer::new);
         serializer.register(String.SERIAL_ID, String::new);

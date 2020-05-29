@@ -33,6 +33,7 @@ public class MainSerialize {
         channel.close();
     }
 
+    // Functions for testing all of the serializations.
     private static void serializeTuple(Serializer serializer) throws IOException, SerializationException {
         Tuple<Integer, String> tuple = new Tuple<>(new Integer(123), new String("ABC"));
         Tuple<Integer, String> tupleRef = tuple;

@@ -86,6 +86,11 @@ public class Grade implements Serializable {
         return SERIAL_ID;
     }
 
+    /***
+     * Serialization by writing each value.
+     * @param serializer serializer
+     * @throws IOException
+     */
     @Override
     public void serialize(Serializer serializer) throws IOException {
         String tmpStr = new String(this.name);
@@ -95,6 +100,12 @@ public class Grade implements Serializable {
         serializer.write(tmpDate);
     }
 
+    /***
+     * Deserialization by reading each value.
+     * @param serializer serializer
+     * @throws IOException
+     * @throws SerializationException
+     */
     @Override
     public void deserialize(Serializer serializer) throws IOException, SerializationException {
         this.name = ((String) serializer.readSerializable()).get();

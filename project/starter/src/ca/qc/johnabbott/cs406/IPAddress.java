@@ -116,6 +116,11 @@ public class IPAddress implements Comparable<IPAddress>, Serializable {
         return SERIAL_ID;
     }
 
+    /**
+     * Writing each octet to the serializer.
+     * @param serializer serializer
+     * @throws IOException
+     */
     @Override
     public void serialize(Serializer serializer) throws IOException {
         serializer.write(octet[0]);
@@ -124,6 +129,12 @@ public class IPAddress implements Comparable<IPAddress>, Serializable {
         serializer.write(octet[3]);
     }
 
+    /**
+     * Reading each octet from the serializer.
+     * @param serializer serializer
+     * @throws IOException
+     * @throws SerializationException
+     */
     @Override
     public void deserialize(Serializer serializer) throws IOException, SerializationException {
         octet = new byte[4];

@@ -19,6 +19,52 @@ public class LinkedList<T extends Serializable> implements List<T>, Serializable
 
     public static final byte SERIAL_ID = 0x26;
 
+    @Override
+    public byte getSerialId() {
+        return SERIAL_ID;
+    }
+
+    /**
+     * Serialize each Link element by checking the size and looping over each one.
+     * @param serializer serializer
+     * @throws IOException
+     */
+    @Override
+    public void serialize(Serializer serializer) throws IOException {
+        serializer.write(size);
+
+        Link<T> current = this.head;
+        for(int i = 0; i < size && current != null; i++){
+            serializer.write(current.element);
+            if(current.next != null) {
+                current = current.next;
+            }
+        }
+    }
+
+    /**
+     * Deserialize the LinkedList by initializing new Links with their elements.
+     * @param serializer serializer
+     * @throws IOException
+     * @throws SerializationException
+     */
+    @Override
+    public void deserialize(Serializer serializer) throws IOException, SerializationException {
+        this.size = serializer.readInt();
+
+        for(int i = 0; i < size; i++){
+            T value = (T) serializer.readSerializable();
+
+            if(i == 0){
+                last = head = new Link<>(value);
+            }
+            else{
+                last.next = new Link<>(value);
+                last = last.next;
+            }
+        }
+    }
+
     /* private inner class for link "chains" */
     private static class Link<T extends Serializable> {
         T element;
@@ -59,42 +105,6 @@ public class LinkedList<T extends Serializable> implements List<T>, Serializable
         last = head = null;
         size = 0;
     }
-
-    @Override
-    public byte getSerialId() {
-        return SERIAL_ID;
-    }
-
-    @Override
-    public void serialize(Serializer serializer) throws IOException {
-        serializer.write(size);
-
-        Link<T> current = this.head;
-        for(int i = 0; i < size && current != null; i++){
-            serializer.write(current.element);
-            if(current.next != null) {
-                current = current.next;
-            }
-        }
-    }
-
-    @Override
-    public void deserialize(Serializer serializer) throws IOException, SerializationException {
-        this.size = serializer.readInt();
-
-        for(int i = 0; i < size; i++){
-            T value = (T) serializer.readSerializable();
-
-            if(i == 0){
-                last = head = new Link<>(value);
-            }
-            else{
-                last.next = new Link<>(value);
-                last = last.next;
-            }
-        }
-    }
-
 
     @Override
     public void add(T element) {
